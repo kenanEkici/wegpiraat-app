@@ -41,6 +41,33 @@ export default class AuthService {
         }
     }
 
+    register = async(body) => {
+        try {
+            let resp = await fetch(
+                `${c.api}/${c.register}`,
+                {
+                    method:'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: body.email,
+                    username: body.username,
+                    password: body.password,
+                    confirm: body.confirm
+                })
+            });
+
+            if (resp.status > 400)                
+                return false;            
+            return true;
+            
+        } catch(e) {
+            console.log(e);
+            return false;
+        }
+    }
+
     refresh = async(token) => {
         try {
             let resp = await fetch(

@@ -2,8 +2,7 @@ import React from 'react';
 import { Button, View, ScrollView, Image, TouchableOpacity, Text } from 'react-native';
 import AuthService from '../service/authservice';
 import s from '../styles/styles';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Feed from '../components/feed';
+import { Icon } from 'react-native-elements'
 
 export default class ProfileScreen extends React.Component {
     
@@ -13,10 +12,13 @@ export default class ProfileScreen extends React.Component {
           service: new AuthService(),
           username: null,
           email: null,
-          feed: false,
           filter: ""
         }        
     }
+
+    static navigationOptions = {
+        header: null
+    };
 
     async componentDidMount() {
         await this.getData();
@@ -33,22 +35,7 @@ export default class ProfileScreen extends React.Component {
         await this.setState({email:user.email});
     }
 
-    async showFeed(filter) {
-        await this.setState({filter:filter});
-        await this.setState({feed:true});
-    }
-
     render() {
-        if (this.state.feed) {
-           return (
-            <ScrollView contentContainerStyle={s.scrollContainerCenter}>
-                <TouchableOpacity style={[s.standardButton]} onPress={() => this.setState({feed:false})}>
-                    <Text style={s.standardButtonText}>Close results</Text>
-                </TouchableOpacity>
-                <Feed filterType="profile" filter={this.state.filter}/>
-            </ScrollView>
-           )
-        }
 
         return (
             <ScrollView contentContainerStyle={s.scrollContainerCenter}>
@@ -56,26 +43,26 @@ export default class ProfileScreen extends React.Component {
                 <Text style={s.h2}>{this.state.username}</Text>
                 <Text style={s.h3}>{this.state.email}</Text>
                 <View style={s.profileCard}>
-                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.showFeed("posts")}>
+                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.props.navigation.navigate('Posts', {filterType: 'profile', filter:'posts'})}>
                         <Text style={s.profileButtonText}>Posts</Text>
-                        <Ionicons name="ios-search" size={25} color="black" />
+                        <Icon name='car' type='font-awesome' />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.showFeed("likes")}>
+                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.props.navigation.navigate('Posts', {filterType: 'profile', filter:'likes'})}>
                         <Text style={s.profileButtonText}>Likes</Text>
-                        <Ionicons name="ios-search" size={25} color="black" />
+                        <Icon name='heart' type='font-awesome' />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.showFeed("comments")}>
+                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.props.navigation.navigate('Posts', {filterType: 'profile', filter:'comments'})}>
                         <Text style={s.profileButtonText}>Comments</Text>
-                        <Ionicons name="ios-search" size={25} color="black" />
+                        <Icon name='comment' type='font-awesome' />
                     </TouchableOpacity>
                 </View>
                 <View>
-                    <TouchableOpacity style={[s.standardButton, s.buttonContainer]}>
-                        <Ionicons name="ios-search" size={25} color="black" />
+                    <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={() => this.props.navigation.navigate('Settings')}>  
+                        <Icon name='wrench' type='font-awesome' />                      
                         <Text style={s.standardButtonText}>Settings</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={() => this.logout()}>
-                        <Ionicons name="ios-search" size={25} color="black" />
+                        <Icon name='user' type='font-awesome' />
                         <Text style={s.standardButtonText}>Logout</Text>
                     </TouchableOpacity>
                 </View>

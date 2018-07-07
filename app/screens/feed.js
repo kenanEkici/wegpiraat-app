@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text, Button, Image, TouchableHighlight, 
+import { View, Button, Image, TouchableHighlight, 
   ActivityIndicator, FlatList, Animated, TouchableOpacity, TextInput, ScrollView, Picker } from 'react-native';
 import WegpiraatService from '../service/wegpiraatservice';
 import s from '../styles/styles';
 import con from '../configuration/settings';
 import Modal from 'react-native-modal';
+import { Text, SearchBar } from 'react-native-elements';
 
-export default class Feed extends React.Component {
+export default class FeedScreen extends React.Component {
 
   constructor(props) {
     super(props);
@@ -27,13 +28,17 @@ export default class Feed extends React.Component {
     }
   }
 
+  static navigationOptions = ({navigation}) => ({
+    headerTitle: "Go back"
+  });
+
   async componentDidMount(){
     await this.getData();
   }
 
   getData = async() => {
     await this.setState({loading:true, page:1}); //reset the page count 
-    let data = await this.service.getWegpiraten(1, this.props.filterType, this.props.filter);
+    let data = await this.service.getWegpiraten(1, this.props.navigation.getParam('filterType', 'none'), this.props.navigation.getParam('filter', ''));
     await this.setState({data:data.docs, total:data.pages, loading:false});
   };
 
@@ -47,14 +52,14 @@ export default class Feed extends React.Component {
   }
 
   header = () => {
-    return null;
+    return <SearchBar lightTheme placeholder='Search for:' />
   }
 
   footer = () => {
     if (!this.state.scrolling) return null;
     return (
       <View style={{ paddingVertical: 20, borderTopWidth: 1, borderColor: "#CED0CE", alignItems:"center" }} >
-        <Text>Loading more pirates</Text>
+        <Text h3>Loading more pirates</Text>
         <ActivityIndicator animating size="large" />
       </View>
     );  
@@ -66,7 +71,7 @@ export default class Feed extends React.Component {
         let data = this.state.data;
         for(let i = 0; i < data.length; i++) {
             if (data[i]._id == id) { //found the post
-              data[i].liked = !data[i].liked; //reverse the lik
+              data[i].liked = !data[i].liked; //reverse the like
               if (data[i].liked) {
                 data[i].likeImg = require("../public/like.png");  
                 data[i].likeCount = ++data[i].likeCount;                
@@ -109,14 +114,14 @@ export default class Feed extends React.Component {
     if(this.state.loading){
       return(
         <View style={{flex: 1, padding:40, alignItems:"center", backgroundColor:"rgb(254,241,207)"}}>   
-          <Text style={s.h2}>Loading the pirates...</Text>       
+          <Text h3>Loading the pirates...</Text>       
           <Image style={{height:400}} source={require('../public/loading.gif')}/>          
         </View>
       )
     }
 
     return (
-      <View> 
+      <View style={{paddingTop:30}}>
         <FlatList
           onRefresh={() => this.getData()}
           refreshing={this.state.loading}
@@ -127,8 +132,7 @@ export default class Feed extends React.Component {
             return (
             <View style={s.container}>
               <View style={s.flatContainer}>                
-                <Text style={s.h2}>{item.title}</Text>
-                <Text style={[s.h3, s.plateText]}>{item.plate}</Text>
+                <Text h3 style={s.centeredStandardText}>{item.title}</Text>                
                 <Image style={s.image} source={{uri:item.picture}}></Image>
                 <View style={s.iconRowContainer}>
                   <TouchableOpacity style={s.iconButton} onPress={() => this.like(item._id)}>

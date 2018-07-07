@@ -2,6 +2,7 @@ export default con = {
     api: "https://kenan-api.herokuapp.com/api",
     files: "uploads",
     login: "login",
+    register: "register",
     clientid: "wegpiraat",
     secret: "123",
     grant: "password",

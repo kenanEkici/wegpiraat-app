@@ -93,7 +93,6 @@ export default styles = StyleSheet.create({
       borderColor: "rgba(0, 0, 0, 0.1)"
     },
     profileCard: {
-      backgroundColor: "white",
       flexDirection:"row",
       justifyContent: "space-between",
       padding: 10,
@@ -196,6 +195,9 @@ export default styles = StyleSheet.create({
       fontSize: 12,
       marginBottom:20
     },
+    centeredStandardText: {
+      textAlign: 'center'
+    },
     p: {
       width:200,
       fontSize: 11
@@ -223,9 +225,6 @@ export default styles = StyleSheet.create({
     },
     deleteButtonText: {
       color: "#ff2410"
-    },
-    plateText: {
-      color: "#766b6b"
     },
 
     //buttons
