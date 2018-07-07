@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "sdkVersion": "26.0.0",
+    "name": "Wegpiraat",
+    "description": "Be your own police",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.wegpiraat.wegpiraat"
+    }
+  }
+}
