@@ -52,8 +52,9 @@ export default class LoginScreen extends React.Component {
           </View>
 
           <View style={[s.stretchContainer, s.smallShadow]}>
-            <Text style={[s.standardText]}>New to Wegpiraat? <Text style={[s.a]} onPress={()=>this.props.navigation.navigate('Register')}>Create an account.</Text> </Text>  
-          </View>        
+            <Text style={[s.standardText]}>New to Wegpiraat?</Text> 
+            <Text style={[s.a]} onPress={()=>this.props.navigation.navigate('Register')}>Create an account.</Text>  
+          </View>
 
         </ScrollView>
       )

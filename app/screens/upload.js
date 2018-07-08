@@ -19,6 +19,10 @@ export default class UploadScreen extends React.Component {
       };
     }
 
+    static navigationOptions = ({navigation}) => ({
+      header: null
+    });
+
     choosePic = async() => {
       let result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
@@ -49,6 +53,7 @@ export default class UploadScreen extends React.Component {
         <ScrollView contentContainerStyle={s.scrollContainer}>
           <View style={s.container}>
             <Text h3 style={s.centeredStandardText}>Upload a Wegpiraat</Text> 
+            <Text style={s.standardText} />            
             <Text style={s.standardText} />
             <TextInput style={s.entry} onChangeText={(text)=>this.setState({title:text})} value={this.state.title} maxLength={40} placeholder="Title of post"/>
             <Picker style={{width:250}}
@@ -67,7 +72,12 @@ export default class UploadScreen extends React.Component {
               </View>
             </TouchableOpacity>
             <Text style={s.standardText}/>
-            <View style={{width:250}}><Text style={s.centeredStandardText}>By uploading this image I confirm that it applies to the Wegpiraat Terms</Text></View>                                      
+            <View style={{width:250}}>
+                <Text style={s.centeredStandardText}>By uploading this image I confirm that it applies to the </Text>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Terms') }>
+                    <Text style={[s.a, s.centeredStandardText]}>Terms and Conditions </Text>
+                </TouchableOpacity>
+            </View>                                      
             <Text style={s.standardText}/>
             <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={()=> this.upload() }>
               {this.state.uploading && <ActivityIndicator animating={true} color="white" /> || <Icon name='arrow-up' type='font-awesome' /> }

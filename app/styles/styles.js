@@ -43,7 +43,7 @@ export default styles = StyleSheet.create({
       alignItems:"center",
     }, 
     scrollContainerPadding: {
-      padding:40,
+      padding:10,
       flexGrow: 1, 
       flexDirection: "column",
       justifyContent:"space-between",

@@ -135,4 +135,65 @@ export default class AuthService {
     getUserLocal = async() => {
         return await this.repo.getUser();
     }
+
+    getLegal = async() => {
+        let resp = await fetch(`${c.api}/${c.wegpiraten}/${c.legal}`, { 
+            method: 'GET'
+        });
+
+        if (resp.status > 400)
+            return false;
+        return await resp.json();
+    }
+
+    sendResetToken = async(email) => {
+        try {
+            let resp = await fetch(
+                `${c.api}/${c.password}`,
+                {
+                    method:'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            });
+
+            if (resp.status > 400)                
+                return false;            
+            return true;
+            
+        } catch(e) {
+            console.log(e);
+            return false;
+        }
+    }
+
+    resetPassword = async(token, email, password, confirm) => {
+        try {
+            let resp = await fetch(
+                `${c.api}/${c.resetPassword}`,
+                {
+                    method:'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    token: token,
+                    password: password,
+                    confirm: confirm
+                })
+            });
+
+            if (resp.status > 400)                
+                return false;            
+            return true;
+            
+        } catch(e) {
+            console.log(e);
+            return false;
+        }
+    }
 }

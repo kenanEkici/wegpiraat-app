@@ -11,13 +11,17 @@ import UploadScreen from './screens/upload';
 import ProfileScreen from './screens/profile';
 import PasswordScreen from './screens/password';
 import ResetScreen from './screens/reset';
+import PrivacyScreen from './screens/privacy';
+import TermsScreen from './screens/terms';
 
 const AuthStack = StackNavigator(
   { 
       Login: LoginScreen, 
       Register: RegisterScreen,
       Password: PasswordScreen,
-      Reset: ResetScreen
+      Reset: ResetScreen,
+      Privacy: PrivacyScreen,
+      Terms: TermsScreen
   }
 );
 
@@ -30,12 +34,19 @@ const ProfileStack = StackNavigator(
     }
 )
 
+const UploadStack = StackNavigator(
+    {
+        Upload: UploadScreen,
+        Terms: TermsScreen
+    }
+)
+
 console.disableYellowBox = true;
 
 const MenuStack = TabNavigator(
   {
       Feed: FeedScreen,
-      Upload: UploadScreen,
+      Upload: UploadStack,
       Profile: ProfileStack,
   },
   {

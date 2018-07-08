@@ -24,7 +24,12 @@ export default class FeedScreen extends React.Component {
       selected: null,
       commenting: false,
       options: false,
-      deleteModal: false
+      deleteModal: false,
+      sortType: "",
+      country: true,
+      sort: false,
+      selectedSort: "",
+      selectedCountry: ""
     }
   }
 
@@ -51,8 +56,52 @@ export default class FeedScreen extends React.Component {
     }
   }
 
+  changeSortMethod = async(sortType) => {
+    await this.setState({sortType: sortType});
+    if (sortType == "country") {
+      await this.setState({country: true});
+      await this.setState({sort: false});
+    } else {
+      await this.setState({sort: true});
+      await this.setState({country: false});
+    }
+  }
+
+  sortBy = async() => {
+
+  }
+
   header = () => {
-    return <SearchBar lightTheme placeholder='Search for:' />
+    return (
+      <View style={{padding: 20}}>
+        <View style={s.rowContainer}>
+        <Text>Sort by: </Text>
+          <Picker style={{width:150}}
+                selectedValue={this.state.sortType}
+                onValueChange={(val, index) => this.changeSortMethod(val)}>
+                <Picker.Item label="Country" value="country" />
+                <Picker.Item label="Likes" value="likes" />
+                <Picker.Item label="Comments" value="comments" />
+          </Picker>
+          { !!this.state.country &&
+          <Picker style={{width:140}} selectedValue={this.state.selectedCountry}
+                onValueChange={(val, index) => this.sortBy(val)}>
+                <Picker.Item label="Belgium" value="BE" />
+                <Picker.Item label="Netherlands" value="NL" />
+                <Picker.Item label="Germany" value="DE" />
+                <Picker.Item label="France" value="FR" />
+          </Picker>
+          }
+          { !!this.state.sort &&
+          <Picker  style={{width:140}} selectedValue={this.state.selectedSort}
+                onValueChange={(val, index) => this.sortBy(val)}>
+                <Picker.Item label="Descending" value="DESC" />
+                <Picker.Item label="Ascending" value="ASC" />
+          </Picker>  
+          }        
+        </View>
+      </View>
+      )
   }
 
   footer = () => {
@@ -121,14 +170,14 @@ export default class FeedScreen extends React.Component {
     }
 
     return (
-      <View style={{paddingTop:30}}>
+      <View>
         <FlatList
           onRefresh={() => this.getData()}
           refreshing={this.state.loading}
           onEndReachedThreshold={0.3}
           onEndReached={() => this.scrollData()}
           data={this.state.data}
-          renderItem={({item}) => {            
+          renderItem={({item}) => {
             return (
             <View style={s.container}>
               <View style={s.flatContainer}>                

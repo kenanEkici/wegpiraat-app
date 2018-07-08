@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, TouchableOpacity, Image, TextInput, View, ScrollView, CheckBox, ActivityIndicator} from 'react-native';
+import { TouchableOpacity, Image, TextInput, View, ScrollView, CheckBox, ActivityIndicator} from 'react-native';
 import s from '../styles/styles';
-import { Icon } from 'react-native-elements';
+import { Icon, Text } from 'react-native-elements';
 import AuthService from '../service/authservice';
 
 export default class RegisterScreen extends React.Component {
@@ -33,6 +33,7 @@ export default class RegisterScreen extends React.Component {
         await this.setState({loading: false});
         if (success) {
             this.props.navigation.navigate('Login');
+            Alert.alert("Verification email has been sent.", "Check your email", [{text: 'OK', onPress: () => {}}]);
         } else {
             this.setState({error: "Something went wrong, please try again."});                
         }
@@ -41,8 +42,7 @@ export default class RegisterScreen extends React.Component {
     render() {
         return (
             <ScrollView contentContainerStyle={s.container}>
-                <Text style={s.h2}>* All fields are required</Text>
-                <Text style={s.standardText}/>
+                <Text h4>* All fields are required</Text>
                 <Text style={[s.errorMessage]}>{this.state.error}</Text>
                 <TextInput onChangeText={(text)=>this.setState({email:text})} value={this.state.email} style={s.entry} placeholder="Email" />
                 <TextInput onChangeText={(text)=>this.setState({username:text})} value={this.state.username} style={s.entry} placeholder="Username" />
@@ -50,11 +50,15 @@ export default class RegisterScreen extends React.Component {
                 <TextInput onChangeText={(text)=>this.setState({confirm:text})} value={this.state.confirm} style={s.entry} placeholder="Confirm Password" />                    
                 <View style={s.rowContainer}>
                     <CheckBox/>
-                    <Text>I have read the </Text>
-                    <TouchableOpacity onPress={()=> this.props.navigation.goBack() }>
-                        <Text style={s.a}>Wegpiraat Terms.</Text>
-                    </TouchableOpacity>
+                    <Text>I have read and agree with the</Text>                    
                 </View>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Terms') }>
+                    <Text style={s.a}> Terms and Conditions </Text>
+                </TouchableOpacity>
+                <Text>and the</Text>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Privacy') }>
+                    <Text style={s.a}> Privacy Policy</Text>
+                </TouchableOpacity>
                 <Text style={s.standardText}/>
                 <Text style={s.standardText}/>
                 <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => { this.tryRegister()}}>  
