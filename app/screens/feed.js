@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Button, Image, TouchableHighlight, 
-  ActivityIndicator, FlatList, Animated, TouchableOpacity, TextInput, ScrollView, Picker } from 'react-native';
+import {
+  View, Button, Image, TouchableHighlight,
+  ActivityIndicator, FlatList, Animated, TouchableOpacity, TextInput, ScrollView, Picker
+} from 'react-native';
 import WegpiraatService from '../service/wegpiraatservice';
 import s from '../styles/styles';
 import con from '../configuration/settings';
 import Modal from 'react-native-modal';
 import { Text, SearchBar } from 'react-native-elements';
+import { Icon } from 'react-native-elements'
 
 export default class FeedScreen extends React.Component {
 
@@ -13,257 +16,140 @@ export default class FeedScreen extends React.Component {
     super(props);
     this.service = new WegpiraatService();
     this.state = {
-      data: null,
+      plate: "",
       loading: false,
-      scrolling: false,
-      page: 1,
-      total: 0,
-      showModal: false,
+      query: "Find a roadhog",
+      searchComplete: false,
+      noResult: false,
       comments: [],
       comment: "",
-      selected: null,
-      commenting: false,
-      options: false,
-      deleteModal: false,
-      sortType: "",
-      country: true,
-      sort: false,
-      selectedSort: "",
-      selectedCountry: ""
+      data:null
     }
   }
 
-  static navigationOptions = ({navigation}) => ({
+  static navigationOptions = ({ navigation }) => ({
     headerTitle: "Go back"
   });
 
-  async componentDidMount(){
-    await this.getData();
-  }
-
-  getData = async() => {
-    await this.setState({loading:true, page:1}); //reset the page count 
-    let data = await this.service.getWegpiraten(1, this.props.navigation.getParam('filterType', 'none'), this.props.navigation.getParam('filter', ''));
-    await this.setState({data:data.docs, total:data.pages, loading:false});
-  };
-
-  scrollData = async() => {
-    //only if there are any more pages
-    if (this.state.page <= this.state.total) {
-      await this.setState({scrolling:true, page:this.state.page + 1}); //increment page
-      let data = await this.service.getWegpiraten(this.state.page, this.props.filterType, this.props.filter);
-      await this.setState({data:this.state.data.concat(data.docs), scrolling:false});
-    }
-  }
-
-  changeSortMethod = async(sortType) => {
-    await this.setState({sortType: sortType});
-    if (sortType == "country") {
-      await this.setState({country: true});
-      await this.setState({sort: false});
-    } else {
-      await this.setState({sort: true});
-      await this.setState({country: false});
-    }
-  }
-
-  sortBy = async() => {
-
-  }
-
   header = () => {
     return (
-      <View style={{padding: 20}}>
-        <View style={s.rowContainer}>
-        <Text>Sort by: </Text>
-          <Picker style={{width:150}}
-                selectedValue={this.state.sortType}
-                onValueChange={(val, index) => this.changeSortMethod(val)}>
-                <Picker.Item label="Country" value="country" />
-                <Picker.Item label="Likes" value="likes" />
-                <Picker.Item label="Comments" value="comments" />
+      <View style={{ padding: 20 }}>
+        <View style={{paddingLeft: 10, paddingRight:10, backgroundColor:"#e9ece5",flexDirection:"row", alignItems:"center", justifyContent:"space-between",}}>
+          <Text>Country: </Text>
+          <Picker style={{ width: 140 }} selectedValue={this.state.countryFilter}
+            onValueChange={(val, index) => this.filterQuery(val)}>
+            <Picker.Item label="Belgium" value="BE" />
+            <Picker.Item label="Netherlands" value="NL" />
+            <Picker.Item label="Germany" value="DE" />
+            <Picker.Item label="France" value="FR" />
           </Picker>
-          { !!this.state.country &&
-          <Picker style={{width:140}} selectedValue={this.state.selectedCountry}
-                onValueChange={(val, index) => this.sortBy(val)}>
-                <Picker.Item label="Belgium" value="BE" />
-                <Picker.Item label="Netherlands" value="NL" />
-                <Picker.Item label="Germany" value="DE" />
-                <Picker.Item label="France" value="FR" />
-          </Picker>
-          }
-          { !!this.state.sort &&
-          <Picker  style={{width:140}} selectedValue={this.state.selectedSort}
-                onValueChange={(val, index) => this.sortBy(val)}>
-                <Picker.Item label="Descending" value="DESC" />
-                <Picker.Item label="Ascending" value="ASC" />
-          </Picker>  
-          }        
         </View>
       </View>
-      )
+    )
   }
 
-  footer = () => {
-    if (!this.state.scrolling) return null;
-    return (
-      <View style={{ paddingVertical: 20, borderTopWidth: 1, borderColor: "#CED0CE", alignItems:"center" }} >
-        <Text h3>Loading more pirates</Text>
-        <ActivityIndicator animating size="large" />
-      </View>
-    );  
-  };
-
-  like = async(id) => {
-      let res = await this.service.like(id);
-      if (res) {
-        let data = this.state.data;
-        for(let i = 0; i < data.length; i++) {
-            if (data[i]._id == id) { //found the post
-              data[i].liked = !data[i].liked; //reverse the like
-              if (data[i].liked) {
-                data[i].likeImg = require("../public/like.png");  
-                data[i].likeCount = ++data[i].likeCount;                
-              } else {
-                data[i].likeImg = require("../public/unlike.png");
-                data[i].likeCount = --data[i].likeCount; 
-              }
-            }
+  comment = async (item) => {
+    await this.setState({ commenting: true });
+    let resp = await this.service.comment(item._id, this.state.comment);
+    if (resp) {      
+      let data = this.state.data;
+      data.forEach((el) => {
+        if (el._id == item._id) {
+          el.comments.unshift(resp);
         }
-        await this.setState({data:data}); //rerender the data
-      }
+      });
+      
+      await this.setState({ comment: "", commenting: false, data:data });
+    }
   }
 
-  comment = async() => {
-      await this.setState({commenting:true});
-      let resp = await this.service.comment(this.state.selected, this.state.comment);
-      if (resp) {
-        let comments = [resp].concat(this.state.comments);
-        await this.setState({comments, comments, comment:"", commenting:false});
-      }
+  query = async (plate) => {
+    await this.setState({ plate: plate, query: "Results for: " + plate, searchComplete: false, loading: true });
+    let data = await this.service.getWegpiratenByPlate(plate, 1);
+    if (!data || data == undefined || data.docs.length == 0) {
+      await this.setState({ noResult: true, searchComplete: false });
+    } else {
+      await this.setState({ data: data.docs, noResult: false, searchComplete: true });
+    }
+    await this.setState({ loading: false });
   }
 
-  options = async(item) => {
-    await this.setState({options:true, selected:item});
-  }
-
-  edit = async() => {    
-  }
-
-  delete = async() => {
-
-  }
-
-  share = async() => {
-
-  }
 
   render() {
 
-    if(this.state.loading){
-      return(
-        <View style={{flex: 1, padding:40, alignItems:"center", backgroundColor:"rgb(254,241,207)"}}>   
-          <Text h3>Loading the pirates...</Text>       
-          <Image style={{height:400}} source={require('../public/loading.gif')}/>          
-        </View>
-      )
-    }
-
     return (
-      <View>
-        <FlatList
-          onRefresh={() => this.getData()}
-          refreshing={this.state.loading}
-          onEndReachedThreshold={0.3}
-          onEndReached={() => this.scrollData()}
-          data={this.state.data}
-          renderItem={({item}) => {
-            return (
-            <View style={s.container}>
-              <View style={s.flatContainer}>                
-                <Text h3 style={s.centeredStandardText}>{item.title}</Text>                
-                <Image style={s.image} source={{uri:item.picture}}></Image>
-                <View style={s.iconRowContainer}>
-                  <TouchableOpacity style={s.iconButton} onPress={() => this.like(item._id)}>
-                    <Image style={s.icon} source={item.likeImg}/><Text>{item.likeCount}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={s.iconButton} onPress={() => this.options(item)}>
-                    <Image style={s.icon} source={require('../public/more.png')}/>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={s.iconButton} onPress={() => this.setState({showModal:true,comments:item.comments,selected:item._id})}>
-                    <Image style={s.icon} source={require('../public/comment.png')}/><Text>{item.comments.length}</Text>
-                  </TouchableOpacity>
-                </View>                
-              </View>
-              <View><Text>{item.createdAt}</Text></View>
-            </View>
-            )
-          }
-          }
-          ListHeaderComponent={this.header}
-          ListFooterComponent={this.footer}>
-        </FlatList>
+      <View style={s.feedContainer}>
 
-        <Modal
-          style={s.scrollContainerCenter}
-          isVisible={this.state.showModal} animationOut="fadeOutUp"
-          backdropOpacity={0.5} onBackdropPress={() => this.setState({showModal:false})} >
-          <View style={s.modalContainer}>
-            <TextInput style={s.multiline} placeholder="Comment here (max. 80 characters)" 
-              onChangeText={(text)=>this.setState({comment:text})} value={this.state.comment} maxLength={80} multiline={true}/>
-            <TouchableOpacity style={s.optionsButton} onPress={()=> { this.comment() }}>
-              {this.state.commenting && <ActivityIndicator animating={true} color="black" /> }   
-              <Text style={s.standardButtonText}>Comment</Text>
-            </TouchableOpacity>
-            <ScrollView style={{width:250}}>
-              <FlatList 
-                data={this.state.comments}
-                renderItem={({item}) => {
-                  return (
-                    <View style={s.commentContainer}>
-                      <Text style={s.commentHeader}>{item.postedBy}</Text>
-                      <Text style={s.commentBody}>{item.commentData}</Text>
-                    </View>
-                  )
-                }} />
-            </ScrollView>
-          </View>
-        </Modal>
+        <View style={s.containerNoPadding}>      
+          <Text style={s.h1}>
+            {this.state.query}
+          </Text>
+        </View>
 
-        <Modal
-          style={s.scrollContainerCenter}
-          isVisible={this.state.options} animationOut="fadeOutUp"
-          backdropOpacity={0.5} onBackdropPress={() => this.setState({options:false})} >
-          <View style={s.optionsContainer}>
-            <TouchableOpacity style={s.optionsButton} onPress={()=> { this.edit() }}>  
-              <Text style={s.standardButtonText}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.optionsButton} onPress={()=> { this.share() }}>   
-              <Text style={s.standardButtonText}>Share</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[s.optionsButton, s.deleteButton]} onPress={()=> { this.setState({deleteModal: true}); }}>   
-              <Text style={[s.standardButtonText, s.deleteButtonText]}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
+        <SearchBar
+          containerStyle={{ width: "100%" }}
+          autoCorrect={false}
+          onChangeText={(plate) => this.query(plate)}
+          showLoadingIcon={this.state.searching}
+          icon={{ type: 'font-awesome', name: 'search' }}
+          placeholder='Fill in the platenumber'>
+        </SearchBar>
 
-        <Modal
-          style={s.scrollContainerCenter}
-          isVisible={this.state.deleteModal}
-          backdropOpacity={0.5} onBackdropPress={() => this.setState({deleteModal:false})} >
-          <View style={s.optionsContainer}>
-            <Text style={s.h2}>
-                Are you sure you want to delete this post?
-            </Text>
-            <TouchableOpacity style={s.optionsButton} onPress={()=> { this.delete(item) }}>   
-              <Text style={s.standardButtonText}>Yes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.optionsButton} onPress={()=> { this.delete(item) }}>   
-              <Text style={s.standardButtonText}>No</Text>
-            </TouchableOpacity>
+        {this.state.searchComplete &&
+            <FlatList
+            style={{flex:1}}
+            contentContainerStyle={{flexGrow:1, padding:20, paddingBottom:80}}
+            onRefresh={() => this.query(this.state.plate)}
+            refreshing={this.state.loading}
+            data={this.state.data}
+            renderItem={({ item }) => {
+              return (
+                <View style={{marginBottom:70}}>
+                  <Text style={{ width:500}}/>
+
+                  <View style={{alignItems:"center"}}>                    
+                    <Text h3 style={s.centeredStandardText}>{item.plate}</Text>
+                    <Image style={{height:130, width:"100%"}} source={require('../public/car.png')}/>
+                    <Text style={s.centeredStandardText}>{item.createdAt}</Text> 
+                  </View>         
+
+                  <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", marginBottom:20, marginTop:20}}>
+                    <TextInput style={s.multiline} placeholder="Comment here (max. 80 characters)"
+                      onChangeText={(text) => this.setState({ comment: text })} value={this.state.comment} maxLength={80} multiline={true} />
+                    <TouchableOpacity style={s.optionsButton} onPress={() => { this.comment(item) }}>
+                      {this.state.commenting && <ActivityIndicator animating={true} color="black" />}
+                      {!this.state.commenting && <Icon name="send"/>}
+                    </TouchableOpacity>
+                  </View>
+
+                  <FlatList
+                    data={item.comments}
+                    renderItem={({ item }) => {
+                      return (
+                        <View style={s.commentContainer}>
+                          <Text style={s.commentHeader}>{item.postedBy}</Text>
+                          <Text style={s.commentBody}>{item.commentData}</Text>
+                        </View>
+                      )
+                    }} />
+                </View>
+              )
+            }
+            }
+            ListHeaderComponent={this.header}>
+          </FlatList>
+        }
+
+        {this.state.loading && <ActivityIndicator size="large" /> }    
+        {this.state.noResult && !this.state.loading &&
+          <View style={{ marginTop: 30 }}>       
+            <View>
+              <Text style={s.centeredStandardText}>Road hog not found.</Text>
+              <Text style={[s.a, s.centeredStandardText]} onPress={() => this.props.navigation.navigate('Password')}>Be the first to comment.</Text>
+            </View>          
           </View>
-        </Modal>
-      </View>  
+        }
+      </View>
     )
   }
 }

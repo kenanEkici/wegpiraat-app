@@ -39,31 +39,20 @@ export default class ProfileScreen extends React.Component {
 
         return (
             <ScrollView contentContainerStyle={s.scrollContainerCenter}>
-                <Image style={s.profile} source={require('../public/profile.png')}/>
-                <Text style={s.h2}>{this.state.username}</Text>
-                <Text style={s.h3}>{this.state.email}</Text>
-                <View style={s.profileCard}>
-                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.props.navigation.navigate('Posts', {filterType: 'profile', filter:'posts'})}>
-                        <Text style={s.profileButtonText}>Posts</Text>
-                        <Icon name='car' type='font-awesome' />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.props.navigation.navigate('Posts', {filterType: 'profile', filter:'likes'})}>
-                        <Text style={s.profileButtonText}>Likes</Text>
-                        <Icon name='heart' type='font-awesome' />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[s.profileButton]} onPress={() => this.props.navigation.navigate('Posts', {filterType: 'profile', filter:'comments'})}>
-                        <Text style={s.profileButtonText}>Comments</Text>
-                        <Icon name='comment' type='font-awesome' />
-                    </TouchableOpacity>
+                <View style={{alignItems:"center", backgroundColor:"white", width:250, padding:20}}>
+                    <Image style={s.profile} source={require('../public/profile.png')}/>
+                    <Text style={s.h2}>{this.state.username}</Text>
+                    <Text style={s.h3}>{this.state.email}</Text>
                 </View>
-                <View>
+                
+                <View style={{flex:1, justifyContent:"center"}}>
                     <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={() => this.props.navigation.navigate('Settings')}>  
-                        <Icon name='wrench' type='font-awesome' />                      
-                        <Text style={s.standardButtonText}>Settings</Text>
+                        <Icon name='wrench' type='font-awesome' />     
+                        <Text style={s.standardButtonText}>Edit profile</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={() => this.logout()}>
                         <Icon name='user' type='font-awesome' />
-                        <Text style={s.standardButtonText}>Logout</Text>
+                        <Text style={s.standardButtonText}>Log out</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

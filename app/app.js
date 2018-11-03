@@ -7,7 +7,6 @@ import LoginScreen from './screens/login';
 import RegisterScreen from './screens/register';
 import SplashScreen from './screens/splash';
 import FeedScreen from './screens/feed';
-import UploadScreen from './screens/upload';
 import ProfileScreen from './screens/profile';
 import PasswordScreen from './screens/password';
 import ResetScreen from './screens/reset';
@@ -28,16 +27,7 @@ const AuthStack = StackNavigator(
 const ProfileStack = StackNavigator(
     {
         Profile: ProfileScreen,
-        Posts: FeedScreen,
-        Likes: FeedScreen,        
         Settings: RegisterScreen
-    }
-)
-
-const UploadStack = StackNavigator(
-    {
-        Upload: UploadScreen,
-        Terms: TermsScreen
     }
 )
 
@@ -46,7 +36,6 @@ console.disableYellowBox = true;
 const MenuStack = TabNavigator(
   {
       Feed: FeedScreen,
-      Upload: UploadStack,
       Profile: ProfileStack,
   },
   {
@@ -55,9 +44,7 @@ const MenuStack = TabNavigator(
               const { routeName } = navigation.state;
               let iconName;
               if (routeName === 'Feed') {
-                  iconName = 'whatshot'          
-              } else if (routeName === 'Upload') {
-                  iconName = 'add'
+                  iconName = 'search'  
               } else if (routeName === 'Profile') {
                   iconName = 'person'
               }

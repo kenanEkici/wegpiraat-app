@@ -9,11 +9,25 @@ export default styles = StyleSheet.create({
       alignItems: 'center',
       padding:40
     },
+    containerNoPadding: {
+      backgroundColor:"#e8edf3", 
+      width:"100%",
+      paddingTop:40,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     centerContainer: {
       flex: 1,
       flexDirection: 'column',
       alignItems: 'center',
-      padding:40    
+      paddingTop:40,
+      paddingBottom:40  
+    },    
+    feedContainer: {
+      flex: 1,
+      flexDirection: 'column',
+      alignItems: 'center',
     },
     modalContainer: {
       padding:35,
@@ -37,7 +51,12 @@ export default styles = StyleSheet.create({
       justifyContent:"space-between",
     }, 
     scrollContainerCenter: {
-      paddingTop:40,
+      flexGrow: 1,
+      alignItems:"center",
+      flexDirection: "column",
+      padding:40
+    }, 
+    scrollContainerCenterNoPad:{
       flexGrow: 1, 
       flexDirection: "column",
       alignItems:"center",
@@ -70,13 +89,6 @@ export default styles = StyleSheet.create({
       flexDirection:"row",
       alignItems:"center",
       justifyContent:"center"
-    },
-    flatContainer: {
-      alignItems: "center",
-      backgroundColor: "white",
-      marginTop: 20,
-      marginBottom: 20,
-      padding:20,
     },
     commentContainer: {
       backgroundColor: "#F5F5F5",
@@ -141,13 +153,13 @@ export default styles = StyleSheet.create({
     multiline: {
       textAlignVertical: "top",
       textAlign:"left",
-      backgroundColor:"white",
+      backgroundColor:"#F5F5F5",
       padding:5,        
       height:60,
+      borderRadius:5,
       borderColor: "rgba(0,0,0,0.4)",
       borderWidth: 1,
-      marginBottom: 5,
-      width:250,    
+      width:"80%",    
     },
     searchEntry: {
       width:300,
@@ -266,12 +278,14 @@ export default styles = StyleSheet.create({
     },
     optionsButton: {
       alignItems:"center",
-      width:250,
+      justifyContent:"center",
+      backgroundColor: "#e9ece5",
+      width:"15%",
       borderRadius: 4,
       borderWidth: 1,
-      borderColor: "black",
-      margin: 10,
-      padding: 10
+      borderColor: "#e9ece5",
+      height:60,
+      marginLeft: 5
     },
     profileButton: {
       alignItems: 'center',
