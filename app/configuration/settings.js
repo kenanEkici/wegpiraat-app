@@ -1,5 +1,5 @@
 export default con = {
-    api: "https://kenan-api.herokuapp.com/api",
+    api: "http://192.168.1.7:3000/api", //must be an ip address, so no localhost
     files: "uploads",
     login: "login",
     legal: "legal",

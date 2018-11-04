@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Button, Image, TouchableHighlight,
+  View, Button, Image, TouchableHighlight, Alert,
   ActivityIndicator, FlatList, Animated, TouchableOpacity, TextInput, ScrollView, Picker
 } from 'react-native';
 import WegpiraatService from '../service/wegpiraatservice';
@@ -18,12 +18,15 @@ export default class FeedScreen extends React.Component {
     this.state = {
       plate: "",
       loading: false,
-      query: "Find a roadhog",
+      query: "Find a Roadhog",
       searchComplete: false,
       noResult: false,
       comments: [],
       comment: "",
-      data:null
+      data:null,
+      modalVisible: false,
+      countryHog: null,
+      creating: false
     }
   }
 
@@ -38,6 +41,7 @@ export default class FeedScreen extends React.Component {
           <Text>Country: </Text>
           <Picker style={{ width: 140 }} selectedValue={this.state.countryFilter}
             onValueChange={(val, index) => this.filterQuery(val)}>
+            <Picker.Item label="All" value="All" />
             <Picker.Item label="Belgium" value="BE" />
             <Picker.Item label="Netherlands" value="NL" />
             <Picker.Item label="Germany" value="DE" />
@@ -46,6 +50,27 @@ export default class FeedScreen extends React.Component {
         </View>
       </View>
     )
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
+  createWegpiraat = async () => {
+    await this.setState({creating: true, loading:true});
+    let data = {
+      plate: this.state.plate,
+      country: this.state.countryHog
+    };
+    let resp = await this.service.upload(data);
+    if (resp) {      
+      let resp2 = await this.service.comment(resp._id, this.state.comment);
+      await this.query(resp.plate);
+      //await this.setState({data: [resp], noResult: false, searchComplete:true});
+    } else {
+      Alert.alert("Something went wrong. Try again later.", [{text: 'OK', onPress: () => {}}]); 
+    }
+    await this.setState({creating: false, modalVisible:false, comment:""});
   }
 
   comment = async (item) => {
@@ -65,13 +90,21 @@ export default class FeedScreen extends React.Component {
 
   query = async (plate) => {
     await this.setState({ plate: plate, query: "Results for: " + plate, searchComplete: false, loading: true });
-    let data = await this.service.getWegpiratenByPlate(plate, 1);
-    if (!data || data == undefined || data.docs.length == 0) {
-      await this.setState({ noResult: true, searchComplete: false });
-    } else {
-      await this.setState({ data: data.docs, noResult: false, searchComplete: true });
+    if (plate == "") 
+        await this.setState({query:"Find a Roadhog", noResult: false, loading: false});
+    else {
+      let data = await this.service.getWegpiratenByPlate(plate, 1);
+      if (!data || data == undefined || data.docs.length == 0) {      
+        await this.setState({ noResult: true, searchComplete: false });
+      } else {
+        await this.setState({ data: data.docs, noResult: false, searchComplete: true });
+      }
+      await this.setState({ loading: false });
     }
-    await this.setState({ loading: false });
+  }
+
+  changeCountry = async (val) => {
+    await this.setState({countryHog: val});
   }
 
 
@@ -89,10 +122,12 @@ export default class FeedScreen extends React.Component {
         <SearchBar
           containerStyle={{ width: "100%" }}
           autoCorrect={false}
-          onChangeText={(plate) => this.query(plate)}
+          onChangeText={(text) => this.query(text)}
+          clearIcon={{color:'red'}}
+          inputStyle={{fontSize:24, textAlign: "center"}}
           showLoadingIcon={this.state.searching}
-          icon={{ type: 'font-awesome', name: 'search' }}
-          placeholder='Fill in the platenumber'>
+          searchIcon
+          placeholder='Search a platenumber'>
         </SearchBar>
 
         {this.state.searchComplete &&
@@ -145,10 +180,43 @@ export default class FeedScreen extends React.Component {
           <View style={{ marginTop: 30 }}>       
             <View>
               <Text style={s.centeredStandardText}>Road hog not found.</Text>
-              <Text style={[s.a, s.centeredStandardText]} onPress={() => this.props.navigation.navigate('Password')}>Be the first to comment.</Text>
+              <Text style={[s.a, s.centeredStandardText]} onPress={() => this.setModalVisible(!this.state.modalVisible)}>Be the first to comment.</Text>
             </View>          
           </View>
         }
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}>
+          <ScrollView>
+            <View style={s.scrollContainerCenter}>
+                <Text h2 style={{marginBottom:40}}>Add <Text>{this.state.plate}</Text></Text> 
+                <View style={{paddingLeft: 10, paddingRight:10, marginBottom:50, backgroundColor:"#e9ece5",flexDirection:"row", alignItems:"center", justifyContent:"space-between",}}>
+                  <Text>Country: </Text>
+                  <Picker style={{ width: 140 }} onValueChange={(val, index) => this.changeCountry(val)} selectedValue={this.state.countryHog}>
+                    <Picker.Item label="Belgium" value="BE" />
+                    <Picker.Item label="Netherlands" value="NL" />
+                    <Picker.Item label="Germany" value="DE" />
+                    <Picker.Item label="France" value="FR" />
+                  </Picker>
+                </View>
+                <Image style={{height:100, width:"100%", marginBottom:60}} source={require('../public/car.png')}/>
+                <TextInput style={s.multiline} placeholder="Comment here (max. 80 characters)"
+                        onChangeText={(text) => this.setState({ comment: text })} value={this.state.comment} maxLength={80} multiline={true} />
+                <View style={{flexDirection:"row", marginTop:20, alignItems:"center", justifyContent:"space-between",}}>
+                  <TouchableOpacity disabled={this.state.creating} style={[s.standardButton2, s.buttonContainer]} onPress={() => { this.createWegpiraat()}}>  
+                    {this.state.creating && <ActivityIndicator animating={true} color="white" /> || <Icon name='add' /> }
+                    <Text style={s.standardButtonText}>Add</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity  style={[s.standardButton2, s.buttonContainer]} onPress={() => { this.setState({modalVisible:false})}}>  
+                    <Icon name='close' />
+                    <Text style={s.standardButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View> 
+              </View>
+          </ScrollView>
+        </Modal>
       </View>
     )
   }

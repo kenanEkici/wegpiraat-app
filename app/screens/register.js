@@ -41,30 +41,32 @@ export default class RegisterScreen extends React.Component {
 
     render() {
         return (
-            <ScrollView contentContainerStyle={s.container}>
-                <Text h4>* All fields are required</Text>
-                <Text style={[s.errorMessage]}>{this.state.error}</Text>
-                <TextInput onChangeText={(text)=>this.setState({email:text})} value={this.state.email} style={s.entry} placeholder="Email" />
-                <TextInput onChangeText={(text)=>this.setState({username:text})} value={this.state.username} style={s.entry} placeholder="Username" />
-                <TextInput onChangeText={(text)=>this.setState({password:text})} value={this.state.password} style={s.entry} placeholder="Password" />
-                <TextInput onChangeText={(text)=>this.setState({confirm:text})} value={this.state.confirm} style={s.entry} placeholder="Confirm Password" />                    
-                <View style={s.rowContainer}>
-                    <CheckBox/>
-                    <Text>I have read and agree with the</Text>                    
+            <ScrollView contentContainerStyle={s.scrollContainer}>
+                <View style={s.centerContainer}>
+                    <Text h4>* All fields are required</Text>
+                    <Text style={[s.errorMessage]}>{this.state.error}</Text>
+                    <TextInput onChangeText={(text)=>this.setState({email:text})} value={this.state.email} style={s.entry} placeholder="Email" />
+                    <TextInput onChangeText={(text)=>this.setState({username:text})} value={this.state.username} style={s.entry} placeholder="Username" />
+                    <TextInput onChangeText={(text)=>this.setState({password:text})} value={this.state.password} style={s.entry} placeholder="Password" />
+                    <TextInput onChangeText={(text)=>this.setState({confirm:text})} value={this.state.confirm} style={s.entry} placeholder="Confirm Password" />                    
+                    <View style={s.rowContainer}>
+                        <CheckBox/>
+                        <Text>I have read and agree with the</Text>                    
+                    </View>
+                    <TouchableOpacity onPress={()=> this.props.navigation.navigate('Terms') }>
+                        <Text style={s.a}> Terms and Conditions </Text>
+                    </TouchableOpacity>
+                    <Text>and the</Text>
+                    <TouchableOpacity onPress={()=> this.props.navigation.navigate('Privacy') }>
+                        <Text style={s.a}> Privacy Policy</Text>
+                    </TouchableOpacity>
+                    <Text style={s.standardText}/>
+                    <Text style={s.standardText}/>
+                    <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => { this.tryRegister()}}>  
+                        {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='user' type='font-awesome' /> }
+                        <Text style={s.standardButtonText}>Create Account</Text>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Terms') }>
-                    <Text style={s.a}> Terms and Conditions </Text>
-                </TouchableOpacity>
-                <Text>and the</Text>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Privacy') }>
-                    <Text style={s.a}> Privacy Policy</Text>
-                </TouchableOpacity>
-                <Text style={s.standardText}/>
-                <Text style={s.standardText}/>
-                <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => { this.tryRegister()}}>  
-                    {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='user' type='font-awesome' /> }
-                    <Text style={s.standardButtonText}>Create Account</Text>
-                </TouchableOpacity>
             </ScrollView>
         )
     }

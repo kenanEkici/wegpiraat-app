@@ -27,8 +27,9 @@ export default class AuthService {
                 })
             });           
 
-            if (resp.status > 400)
-                return false;        
+            if (resp.status > 400) {
+                return false;  
+            }      
                 
             if (await this.repo.setKeys(await resp.json())) {
                 return await this.repo.setUser(await this.getUser());

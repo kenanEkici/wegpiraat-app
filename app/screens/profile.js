@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View, ScrollView, Image, TouchableOpacity, Text } from 'react-native';
+import { Button, View, ScrollView, Image, TouchableOpacity, TouchableHighlight, Text, Modal} from 'react-native';
 import AuthService from '../service/authservice';
 import s from '../styles/styles';
 import { Icon } from 'react-native-elements'
@@ -39,6 +39,7 @@ export default class ProfileScreen extends React.Component {
 
         return (
             <ScrollView contentContainerStyle={s.scrollContainerCenter}>
+           
                 <View style={{alignItems:"center", backgroundColor:"white", width:250, padding:20}}>
                     <Image style={s.profile} source={require('../public/profile.png')}/>
                     <Text style={s.h2}>{this.state.username}</Text>

@@ -10,7 +10,7 @@ export default styles = StyleSheet.create({
       padding:40
     },
     containerNoPadding: {
-      backgroundColor:"#e8edf3", 
+      backgroundColor:"#F5F5F5", 
       width:"100%",
       paddingTop:40,
       flexDirection: 'column',
@@ -261,6 +261,17 @@ export default styles = StyleSheet.create({
       borderRadius: 4,
       borderColor: "rgba(0, 0, 0, 0.1)",
       marginBottom: 20,   
+    },
+    standardButton2: {
+      alignItems: 'center',
+      justifyContent:'center',
+      backgroundColor: '#CFD8DC',
+      padding: 10,
+      margin:10,
+      width:130,
+      height:50,
+      borderRadius: 4,
+      borderColor: "rgba(0, 0, 0, 0.1)",
     },
     uploadButton: {
       alignItems: 'center',

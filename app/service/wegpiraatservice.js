@@ -20,9 +20,6 @@ export default class WegpiraatService {
 
     upload = async(data) => {
         
-        var form = new FormData();
-        form.append('plate', data.plate);
-
         try {
             let token = await this.check();
 
@@ -31,9 +28,9 @@ export default class WegpiraatService {
                 headers: {
                     "Authorization": token,
                     'Accept': 'application/json',
-                    'Content-Type': 'multipart/form-data'
+                    "Content-Type": 'application/json'
                 },
-                body: form
+                body: JSON.stringify(data)
             });
 
             if (resp.status > 400)
