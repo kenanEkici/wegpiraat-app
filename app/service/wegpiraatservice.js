@@ -15,11 +15,10 @@ export default class WegpiraatService {
             return  'Bearer ' + bear;
         } else {
             throw Error("Bear token not present or failed to refresh!")
-        }        
+        }
     }
 
-    upload = async(data) => {
-        
+    upload = async(body) => {
         try {
             let token = await this.check();
 
@@ -30,15 +29,18 @@ export default class WegpiraatService {
                     'Accept': 'application/json',
                     "Content-Type": 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(body)
             });
 
-            if (resp.status > 400)
+            let data = await resp.json();
+
+            if (resp.status >= 400)                
                 return false;
             else {
-                return await resp.json();
+                return await data;
             }
         } catch(e) {
+            console.log(e);
             return false;
         }
     }
@@ -56,20 +58,22 @@ export default class WegpiraatService {
                     body: JSON.stringify({ commentData: comment })
                 }               
             );
+            
+            let data = await resp.json();
 
-            if (resp.status > 400)
-                return false;            
-            return await resp.json();
+            if (resp.status >= 400)
+                return false;         
+            return data;
         } catch(e) {
             console.log(e);
             return false;
         }
     }
 
-    getWegpiratenByPlate = async(plate, page) => {
+    getWegpiratenByPlate = async(plate, country) => {
         try {
             let token = await this.check();
-            let resp = await fetch(`${c.api}/${c.search}/${plate}/${page}`, { 
+            let resp = await fetch(`${c.api}/${c.search}/${plate}/${country}`, { 
                 method: 'GET', 
                 headers: {
                     "Authorization": token
@@ -78,10 +82,10 @@ export default class WegpiraatService {
 
             let data = await resp.json();
 
-            if (resp.status > 400)
+            if (resp.status >= 400)
                 return false;
             else {
-                return await data;
+                return data;
             }
         } catch(e) {
             console.log(e);

@@ -9,7 +9,7 @@ export default class AuthService {
         this.repo = new AuthRepo();
     }
 
-    login = async(username, password) => {
+    login = async(email, password) => {
         try {
             let resp = await fetch(
                 `${c.api}/${c.login}`,
@@ -19,17 +19,17 @@ export default class AuthService {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: qs.stringify({
-                    username:username,
+                    username:email,
                     password:password,
                     client_id:c.clientid,
                     client_secret:c.secret,
                     grant_type:c.grant
                 })
-            });           
+            }); 
 
-            if (resp.status > 400) {
+            if (resp.status >= 400) {
                 return false;  
-            }      
+            }
                 
             if (await this.repo.setKeys(await resp.json())) {
                 return await this.repo.setUser(await this.getUser());

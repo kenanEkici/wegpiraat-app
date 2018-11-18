@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Image, TextInput, View, ScrollView, CheckBox, ActivityIndicator} from 'react-native';
+import { TouchableOpacity, TextInput, View, ScrollView, Alert, ActivityIndicator} from 'react-native';
 import s from '../styles/styles';
 import { Icon, Text } from 'react-native-elements';
 import AuthService from '../service/authservice';
@@ -50,8 +50,7 @@ export default class RegisterScreen extends React.Component {
                     <TextInput onChangeText={(text)=>this.setState({password:text})} value={this.state.password} style={s.entry} placeholder="Password" />
                     <TextInput onChangeText={(text)=>this.setState({confirm:text})} value={this.state.confirm} style={s.entry} placeholder="Confirm Password" />                    
                     <View style={s.rowContainer}>
-                        <CheckBox/>
-                        <Text>I have read and agree with the</Text>                    
+                        <Text>By creating an account you agree with the</Text>                    
                     </View>
                     <TouchableOpacity onPress={()=> this.props.navigation.navigate('Terms') }>
                         <Text style={s.a}> Terms and Conditions </Text>

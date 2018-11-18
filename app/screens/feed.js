@@ -1,11 +1,10 @@
 import React from 'react';
 import {
-  View, Button, Image, TouchableHighlight, Alert,
+  View, Image, Alert,
   ActivityIndicator, FlatList, Animated, TouchableOpacity, TextInput, ScrollView, Picker
 } from 'react-native';
 import WegpiraatService from '../service/wegpiraatservice';
 import s from '../styles/styles';
-import con from '../configuration/settings';
 import Modal from 'react-native-modal';
 import { Text, SearchBar } from 'react-native-elements';
 import { Icon } from 'react-native-elements'
@@ -16,41 +15,29 @@ export default class FeedScreen extends React.Component {
     super(props);
     this.service = new WegpiraatService();
     this.state = {
-      plate: "",
-      loading: false,
-      query: "Find a Roadhog",
+      
       searchComplete: false,
-      noResult: false,
-      comments: [],
-      comment: "",
+      noResult: false, 
       data:null,
       modalVisible: false,
-      countryHog: null,
-      creating: false
+
+      plate: "",
+
+      comments: [],
+      comment: "",
+
+      loading: false,
+      creating: false,
+      commenting: false,
+
+      countryFilter: "All",
+      countryHog: "BE"
     }
   }
 
   static navigationOptions = ({ navigation }) => ({
     headerTitle: "Go back"
   });
-
-  header = () => {
-    return (
-      <View style={{ padding: 20 }}>
-        <View style={{paddingLeft: 10, paddingRight:10, backgroundColor:"#e9ece5",flexDirection:"row", alignItems:"center", justifyContent:"space-between",}}>
-          <Text>Country: </Text>
-          <Picker style={{ width: 140 }} selectedValue={this.state.countryFilter}
-            onValueChange={(val, index) => this.filterQuery(val)}>
-            <Picker.Item label="All" value="All" />
-            <Picker.Item label="Belgium" value="BE" />
-            <Picker.Item label="Netherlands" value="NL" />
-            <Picker.Item label="Germany" value="DE" />
-            <Picker.Item label="France" value="FR" />
-          </Picker>
-        </View>
-      </View>
-    )
-  }
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
@@ -63,48 +50,45 @@ export default class FeedScreen extends React.Component {
       country: this.state.countryHog
     };
     let resp = await this.service.upload(data);
-    if (resp) {      
-      let resp2 = await this.service.comment(resp._id, this.state.comment);
+    if (resp) {
+      await this.service.comment(resp._id, this.state.comment);
       await this.query(resp.plate);
-      //await this.setState({data: [resp], noResult: false, searchComplete:true});
     } else {
       Alert.alert("Something went wrong. Try again later.", [{text: 'OK', onPress: () => {}}]); 
     }
-    await this.setState({creating: false, modalVisible:false, comment:""});
+    await this.setState({creating: false, modalVisible:false, comment:"", countryHog:"", countryFilter:"All"});
   }
 
   comment = async (item) => {
     await this.setState({ commenting: true });
     let resp = await this.service.comment(item._id, this.state.comment);
-    if (resp) {      
+    if (resp) {
       let data = this.state.data;
       data.forEach((el) => {
         if (el._id == item._id) {
           el.comments.unshift(resp);
         }
-      });
-      
+      });      
       await this.setState({ comment: "", commenting: false, data:data });
-    }
+    } else {      
+      Alert.alert("Something went wrong. Try again later.", [{text: 'OK', onPress: () => {}}]); 
+    }    
   }
 
+  //loading -> when users are querying for hogs
+  //searchComplete -> query is finished
+  //noResult -> result of query is empty
   query = async (plate) => {
-    await this.setState({ plate: plate, query: "Results for: " + plate, searchComplete: false, loading: true });
-    if (plate == "") 
-        await this.setState({query:"Find a Roadhog", noResult: false, loading: false});
-    else {
-      let data = await this.service.getWegpiratenByPlate(plate, 1);
-      if (!data || data == undefined || data.docs.length == 0) {      
-        await this.setState({ noResult: true, searchComplete: false });
-      } else {
-        await this.setState({ data: data.docs, noResult: false, searchComplete: true });
-      }
-      await this.setState({ loading: false });
-    }
-  }
+    await this.setState({ plate: plate, searchComplete: false, loading: true });
 
-  changeCountry = async (val) => {
-    await this.setState({countryHog: val});
+    let data = await this.service.getWegpiratenByPlate(plate, this.state.countryFilter);
+    if (!data || data == undefined || data.length == 0) {
+      await this.setState({ noResult: true, searchComplete: true });
+    } else {
+      await this.setState({ data: data, noResult: false, searchComplete: true });
+    }
+    await this.setState({ loading: false });
+
   }
 
 
@@ -113,10 +97,18 @@ export default class FeedScreen extends React.Component {
     return (
       <View style={s.feedContainer}>
 
-        <View style={s.containerNoPadding}>      
-          <Text style={s.h1}>
-            {this.state.query}
-          </Text>
+        <View style={{ width:"100%", backgroundColor: "#e9ece5", paddingTop: 30, paddingLeft:20, paddingRight:20, paddingBottom:10 }}>
+          <View style={{ paddingLeft: 10, paddingRight: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between", }}>
+            <Text>Country: </Text>
+            <Picker style={{ width: 140 }} selectedValue={this.state.countryFilter}
+              onValueChange={(val, index) => { this.setState({countryFilter: val}); this.query(this.state.plate)}}>
+              <Picker.Item label="All" value="All" />
+              <Picker.Item label="Belgium" value="BE" />
+              <Picker.Item label="Netherlands" value="NL" />
+              <Picker.Item label="Germany" value="DE" />
+              <Picker.Item label="France" value="FR" />
+            </Picker>
+          </View>
         </View>
 
         <SearchBar
@@ -130,7 +122,7 @@ export default class FeedScreen extends React.Component {
           placeholder='Search a platenumber'>
         </SearchBar>
 
-        {this.state.searchComplete &&
+        {this.state.searchComplete && !this.state.noResult &&
             <FlatList
             style={{flex:1}}
             contentContainerStyle={{flexGrow:1, padding:20, paddingBottom:80}}
@@ -144,9 +136,10 @@ export default class FeedScreen extends React.Component {
 
                   <View style={{alignItems:"center"}}>                    
                     <Text h3 style={s.centeredStandardText}>{item.plate}</Text>
+                    <Text></Text>
                     <Image style={{height:130, width:"100%"}} source={require('../public/car.png')}/>
                     <Text style={s.centeredStandardText}>{item.createdAt}</Text> 
-                  </View>         
+                  </View>
 
                   <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", marginBottom:20, marginTop:20}}>
                     <TextInput style={s.multiline} placeholder="Comment here (max. 80 characters)"
@@ -175,13 +168,21 @@ export default class FeedScreen extends React.Component {
           </FlatList>
         }
 
-        {this.state.loading && <ActivityIndicator size="large" /> }    
-        {this.state.noResult && !this.state.loading &&
+        {this.state.loading && <ActivityIndicator style={{ marginTop: 30 }} size="large" /> }    
+        {this.state.noResult && !this.state.loading && this.state.plate != "" &&
           <View style={{ marginTop: 30 }}>       
             <View>
               <Text style={s.centeredStandardText}>Road hog not found.</Text>
               <Text style={[s.a, s.centeredStandardText]} onPress={() => this.setModalVisible(!this.state.modalVisible)}>Be the first to comment.</Text>
             </View>          
+          </View>
+        }
+
+        {this.state.plate == "" &&
+          <View style={s.container}>
+            <Text h3 style={s.centeredStandardText}>Start looking for roadhogs.</Text>
+            <Text></Text>
+            <Image style={{height:130, width:300}} source={require('../public/car.png')}/>
           </View>
         }
 
@@ -194,7 +195,7 @@ export default class FeedScreen extends React.Component {
                 <Text h2 style={{marginBottom:40}}>Add <Text>{this.state.plate}</Text></Text> 
                 <View style={{paddingLeft: 10, paddingRight:10, marginBottom:50, backgroundColor:"#e9ece5",flexDirection:"row", alignItems:"center", justifyContent:"space-between",}}>
                   <Text>Country: </Text>
-                  <Picker style={{ width: 140 }} onValueChange={(val, index) => this.changeCountry(val)} selectedValue={this.state.countryHog}>
+                  <Picker style={{ width: 140 }} onValueChange={(val, index) => this.setState({countryHog: val})} selectedValue={this.state.countryHog}>
                     <Picker.Item label="Belgium" value="BE" />
                     <Picker.Item label="Netherlands" value="NL" />
                     <Picker.Item label="Germany" value="DE" />
