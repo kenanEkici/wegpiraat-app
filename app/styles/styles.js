@@ -204,7 +204,7 @@ export default styles = StyleSheet.create({
       marginLeft: 30   
     },
     standardText: {
-      fontSize: 12,
+      fontSize: 15,
       marginBottom:20
     },
     centeredStandardText: {
@@ -214,8 +214,11 @@ export default styles = StyleSheet.create({
       width:200,
       fontSize: 11
     },
+    margin: {
+      margin:10
+    },
     a:{
-      color:"steelblue", 
+      color:"#474787",
       textDecorationLine:"underline"
     },
     errorMessage: {
@@ -227,7 +230,7 @@ export default styles = StyleSheet.create({
     },
     standardButtonText: {
       fontSize: 16,
-      color: "#1f1f1f",
+      color: "white",
       marginLeft: 20
     },
     profileButtonText: {
@@ -251,16 +254,16 @@ export default styles = StyleSheet.create({
       borderColor: "rgba(0, 0, 0, 0.1)",
       marginBottom: 20, 
     },
-    standardButton: {
+    standardButton: {      
       alignItems: 'center',
       justifyContent:'center',
-      backgroundColor: '#CFD8DC',
+      backgroundColor: '#535c68',
       padding: 10,
-      width:250,
+      width: 300,
       height:50,
       borderRadius: 4,
+      margin: 10,
       borderColor: "rgba(0, 0, 0, 0.1)",
-      marginBottom: 20,   
     },
     standardButton2: {
       alignItems: 'center',

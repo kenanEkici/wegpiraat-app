@@ -13,6 +13,7 @@ import ResetScreen from './screens/reset';
 import PrivacyScreen from './screens/privacy';
 import TermsScreen from './screens/terms';
 
+
 const AuthStack = StackNavigator(
   { 
       Login: LoginScreen, 
@@ -54,6 +55,14 @@ const MenuStack = TabNavigator(
       tabBarOptions: {
         activeTintColor: 'black',
         inactiveTintColor: 'gray',
+        style: {        
+            height: 60,        
+            paddingVertical: 5,    
+        },
+        labelStyle: {        
+            fontSize: 12,        
+            lineHeight: 20,      
+        } 
       },
       tabBarComponent: TabBarBottom,
       tabBarPosition: 'bottom',

@@ -1,63 +1,95 @@
 import React from 'react';
-import { Text, Button, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Image} from 'react-native';
-import Modal from 'react-native-modal';
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import AuthService from '../service/authservice';
 import s from '../styles/styles';
 import { Icon } from 'react-native-elements'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Fumi } from 'react-native-textinput-effects';
+import { material, human, iOSUIKit } from 'react-native-typography'
 
 export default class LoginScreen extends React.Component {
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        loginError: "",
-        loading: false,
-        username: "kenan.ekici@outlook.com",
-        password: "kenan123"
-      }
-    }
-
-    static navigationOptions = {
-      header: null
-    };
-
-    tryLogin = async () => {  
-
-      await this.setState({loading: true});
-      let service = new AuthService();
-      let success = await service.login(this.state.username, this.state.password);
-      await this.setState({loading: false});
-      if (success) {
-          this.props.navigation.navigate('App');
-      } else {
-          this.setState({loginError: "Wrong email or password. Try again."});                
-      }
-    }
-  
-    render() {
-
-      return (
-        <ScrollView contentContainerStyle={s.scrollContainer}>
-          <View style={s.centerContainer}>
-            <Text style={s.h1}>Login to Wegpiraat</Text>
-            <Image style={{height:150, width:230}} source={require('../public/login.png')}/>
-            <Text style={[s.errorMessage]}>{this.state.loginError}</Text>
-            <TextInput onChangeText={(text)=>this.setState({username:text})} value={this.state.username} style={s.entry} placeholder="Email" />
-            <TextInput onChangeText={(text)=>this.setState({password:text})} value={this.state.password} secureTextEntry={true} style={s.entry} placeholder="Password"/>     
-            <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => { this.tryLogin()}}>  
-                {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='check' type='font-awesome' /> }
-                <Text style={s.standardButtonText}>Login</Text>
-            </TouchableOpacity>
-            <Text style={[s.a]} onPress={()=>this.props.navigation.navigate('Password')}>I forgot my password</Text>        
-          </View>
-
-          <View style={[s.stretchContainer, s.smallShadow]}>
-            <Text style={[s.standardText]}>New to Wegpiraat?</Text> 
-            <Text style={[s.a]} onPress={()=>this.props.navigation.navigate('Register')}>Create an account.</Text>  
-          </View>
-
-        </ScrollView>
-      )
+  constructor(props) {
+    super(props);
+    this.state = {
+      loginError: false,
+      loading: false,
+      username: "",
+      password: ""
     }
   }
-  
+
+  static navigationOptions = {
+    header: null
+  };
+
+  tryLogin = async () => {
+
+    await this.setState({ loading: true });
+    let service = new AuthService();
+    let success = await service.login(this.state.username, this.state.password);
+    await this.setState({ loading: false });
+    if (success) {
+      this.setState({loginError: false});
+      this.props.navigation.navigate('App');
+    } else {
+      this.setState({ loginError: true});
+    }
+  }
+
+  render() {
+
+    return (
+
+      <View style={{ flex: 1, backgroundColor: 'white'}}>
+        {/* Header */}
+        <View style={{ flex: 1, alignItems: 'center', flexDirection:"column" }}>
+          {
+            <Image style={{
+              backgroundColor: '#ccc', flex: 1, position: 'absolute', width: '100%', height: '100%',
+              justifyContent: 'center'
+            }} source={require('../public/road.jpg')} />
+          }
+
+          {/* Header */}
+          <View style={{ flex:1, flexDirection:"column", alignItems:"center", justifyContent:"flex-start", paddingTop:40}}>
+            <Text style={iOSUIKit.largeTitleEmphasized}>Login to Wegpiraat</Text>
+
+          </View>
+
+          {/* Footer */}
+          <View style={{flex:1, flexDirection:"column",  alignItems:"center", justifyContent:"flex-end", padding:40}}>
+            
+            {/* Error message */}   
+            { this.state.loginError && 
+              <View style={{padding:20, backgroundColor:"#c0392b", width:300, borderRadius: 6, alignItems:"center"}}>
+                <Text style={iOSUIKit.body}>Wrong password or email</Text>
+                <Text style={[s.a, iOSUIKit.bodyEmphasized, s.margin]} onPress={() => this.props.navigation.navigate('Password')}>I forgot my password</Text>
+              </View>
+            }
+            
+            <View style={{margin: 10, height:70, width:300}}>
+              {/* You might have to change Fumi.js in node modules if it's not behaving correctly  */}
+              <Fumi onChangeText={(text) => this.setState({ username: text })} value={this.state.username}  label={'Email address'} iconClass={FontAwesomeIcon} iconName={'user'} iconColor={'black'} iconSize={30} />
+            </View>
+
+            <View style={{margin: 10, height:70, width:300}}>
+              <Fumi onChangeText={(text) => this.setState({ password: text })} value={this.state.password} secureTextEntry={true}   label={'Password'} iconClass={FontAwesomeIcon} iconName={'lock'} iconColor={'black'} iconSize={30} />
+            </View>
+
+            <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => { this.tryLogin() }}>
+              {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='check' iconStyle={{marginRight:10}} color="#dfe6e9" type='font-awesome' />}
+              <Text style={human.headlineWhite}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Footer */}
+        <View style={{ backgroundColor:"#ecf0f1", height: 120, justifyContent:"center", alignItems: 'center', flexDirection:"column" }}>
+          <Text style={[iOSUIKit.subheadEmphasized, s.standardText]}>New to Wegpiraat?</Text>
+          <Text style={[s.a, iOSUIKit.bodyEmphasized]} onPress={() => this.props.navigation.navigate('Register')}>Create an account.</Text>
+        </View>
+      </View>
+    )
+  }
+}
