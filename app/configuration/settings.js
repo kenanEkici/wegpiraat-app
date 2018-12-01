@@ -1,8 +1,9 @@
 export default con = {
-    api: "http://192.168.5.108:3000/api", //must be an ip address, so no localhost
+    api: "http://192.168.1.7:3000/api", //must be an ip address, so no localhost
     files: "uploads",
     login: "login",
-    legal: "legal",
+    privacy: "privacy",
+    terms: "terms",
     register: "register",
     clientid: "wegpiraat",
     secret: "123",

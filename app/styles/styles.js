@@ -119,7 +119,9 @@ export default styles = StyleSheet.create({
       justifyContent:"center",
       padding: 10
     },
-
+    buttonContainerFlexEnd: {
+      justifyContent:"flex-end"
+    },
     //pictures
     image: {
       height:200,
@@ -225,13 +227,11 @@ export default styles = StyleSheet.create({
       color: "red",
       fontSize: 16,
       fontFamily: "Roboto",
-      marginBottom: 20,
-      marginTop: 20  
     },
     standardButtonText: {
       fontSize: 16,
       color: "white",
-      marginLeft: 20
+      marginLeft: 15
     },
     profileButtonText: {
       fontSize: 10,

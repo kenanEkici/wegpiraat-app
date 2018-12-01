@@ -3,9 +3,9 @@ import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Image } fr
 import AuthService from '../service/authservice';
 import s from '../styles/styles';
 import { Icon } from 'react-native-elements'
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { FontAwesome } from '@expo/vector-icons' 
 import { Fumi } from 'react-native-textinput-effects';
-import { material, human, iOSUIKit } from 'react-native-typography'
+import { iOSUIKit } from 'react-native-typography';
 
 export default class LoginScreen extends React.Component {
 
@@ -41,55 +41,53 @@ export default class LoginScreen extends React.Component {
 
     return (
 
-      <View style={{ flex: 1, backgroundColor: 'white'}}>
+      <ScrollView contentContainerStyle={s.scrollContainer}>
         {/* Header */}
-        <View style={{ flex: 1, alignItems: 'center', flexDirection:"column" }}>
+        <View style={{ flex: 1, alignItems: 'center', flexDirection: "column" }}>
           {
-            <Image style={{
-              backgroundColor: '#ccc', flex: 1, position: 'absolute', width: '100%', height: '100%',
-              justifyContent: 'center'
+            <Image style={{ backgroundColor: '#ccc', flex: 1, position: 'absolute', width: '100%', height: '100%'              
             }} source={require('../public/road.jpg')} />
           }
 
           {/* Header */}
-          <View style={{ flex:1, flexDirection:"column", alignItems:"center", justifyContent:"flex-start", paddingTop:40}}>
-            <Text style={iOSUIKit.largeTitleEmphasized}>Login to Wegpiraat</Text>
-
+          <View style={{ flex: 1, flexDirection: "column", alignItems: "center", paddingTop: 40, justifyContent: "flex-start" }}>
+            <Image style={{width:300, height:150, borderRadius:12}} source={require('../public/sign.png')} />
           </View>
+          
 
           {/* Footer */}
-          <View style={{flex:1, flexDirection:"column",  alignItems:"center", justifyContent:"flex-end", padding:40}}>
-            
-            {/* Error message */}   
-            { this.state.loginError && 
-              <View style={{padding:20, backgroundColor:"#c0392b", width:300, borderRadius: 6, alignItems:"center"}}>
+          <View style={{ flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "flex-end", padding: 40 }}>
+
+            {/* Error message */}
+            {this.state.loginError &&
+              <View style={{ padding: 20, backgroundColor: "#c0392b", width: 300, borderRadius: 6, alignItems: "center" }}>
                 <Text style={iOSUIKit.body}>Wrong password or email</Text>
                 <Text style={[s.a, iOSUIKit.bodyEmphasized, s.margin]} onPress={() => this.props.navigation.navigate('Password')}>I forgot my password</Text>
               </View>
             }
-            
-            <View style={{margin: 10, height:70, width:300}}>
+
+            <View style={{ margin: 10, height: 70, width: 300 }}>
               {/* You might have to change Fumi.js in node modules if it's not behaving correctly  */}
-              <Fumi onChangeText={(text) => this.setState({ username: text })} value={this.state.username}  label={'Email address'} iconClass={FontAwesomeIcon} iconName={'user'} iconColor={'black'} iconSize={30} />
+              <Fumi onChangeText={(text) => this.setState({ username: text })} value={this.state.username} label={'Email address'} iconClass={FontAwesome} iconName={'user'} iconColor={'black'} iconSize={30} />
             </View>
 
-            <View style={{margin: 10, height:70, width:300}}>
-              <Fumi onChangeText={(text) => this.setState({ password: text })} value={this.state.password} secureTextEntry={true}   label={'Password'} iconClass={FontAwesomeIcon} iconName={'lock'} iconColor={'black'} iconSize={30} />
+            <View style={{ margin: 10, height: 70, width: 300 }}>
+              <Fumi onChangeText={(text) => this.setState({ password: text })} value={this.state.password} secureTextEntry={true} label={'Password'} iconClass={FontAwesome} iconName={'lock'} iconColor={'black'} iconSize={30} />
             </View>
 
             <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => { this.tryLogin() }}>
-              {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='check' iconStyle={{marginRight:10}} color="#dfe6e9" type='font-awesome' />}
-              <Text style={human.headlineWhite}>Login</Text>
+              {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='check' color="#dfe6e9" type='font-awesome' />}
+              <Text style={s.standardButtonText}>Login</Text>
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {/* Footer */}
-        <View style={{ backgroundColor:"#ecf0f1", height: 120, justifyContent:"center", alignItems: 'center', flexDirection:"column" }}>
-          <Text style={[iOSUIKit.subheadEmphasized, s.standardText]}>New to Wegpiraat?</Text>
-          <Text style={[s.a, iOSUIKit.bodyEmphasized]} onPress={() => this.props.navigation.navigate('Register')}>Create an account.</Text>
+        <View style={{ flex: 1, flexDirection: "column", alignItems: 'center', justifyContent:"center", padding:30, backgroundColor: "#ecf0f1" }}>
+            <Text style={[iOSUIKit.subheadEmphasized, s.standardText]}>New to Wegpiraat?</Text>
+            <Text style={[s.a, iOSUIKit.bodyEmphasized]} onPress={() => this.props.navigation.navigate('Register')}>Create an account.</Text>
         </View>
-      </View>
+      </ScrollView>
     )
   }
 }

@@ -19,7 +19,7 @@ export default class AuthRepo {
 
     async setUser(data) {
         try {
-            await AsyncStorage.setItem('wegpiraat', data.username); 
+            await AsyncStorage.setItem('wegpiraat', data.email); 
             return true;
         } catch (error) {
             console.log(error);
@@ -48,10 +48,10 @@ export default class AuthRepo {
 
     async getUser() {
         try {
-            let username = await AsyncStorage.getItem('wegpiraat');
+            let user = await AsyncStorage.getItem('wegpiraat');
 
             const value = {
-                username: username
+                user: user
             }
             
             return value;

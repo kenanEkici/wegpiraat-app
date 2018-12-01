@@ -19,8 +19,11 @@ export default class PrivacyScreen extends React.Component {
 
     async componentDidMount(){       
         let service = new AuthService();
-        let data = await service.getLegal();
-        await this.setState({content: data.privacy, loading: false});
+        let data = await service.getPrivacy();
+        if (!data)
+            Alert.alert("Something went wrong.", "Error", [{text: 'Well this is awkward.', onPress: () => {}}]);
+        else
+            await this.setState({content: data.data, loading: false});
     }
 
     render() {

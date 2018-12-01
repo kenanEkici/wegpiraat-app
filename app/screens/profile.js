@@ -10,10 +10,9 @@ export default class ProfileScreen extends React.Component {
         super(props);
         this.state = {
           service: new AuthService(),
-          username: null,
           email: null,
-          filter: ""
-        }        
+          fullName: ""
+        } 
     }
 
     static navigationOptions = {
@@ -31,7 +30,7 @@ export default class ProfileScreen extends React.Component {
 
     async getData() {
         let user = await this.state.service.getUser();
-        await this.setState({username:user.username});
+        await this.setState({username:user.fullName});
         await this.setState({email:user.email});
     }
 
@@ -40,15 +39,15 @@ export default class ProfileScreen extends React.Component {
         return (
             <ScrollView contentContainerStyle={s.scrollContainerCenter}>
            
-                <View style={{alignItems:"center", backgroundColor:"white", width:250, padding:20}}>
+                <View style={{alignItems:"center", borderRadius:6, backgroundColor:"white", width:250, padding:20}}>
                     <Image style={s.profile} source={require('../public/profile.png')}/>
-                    <Text style={s.h2}>{this.state.username}</Text>
+                    <Text style={s.h2}>{this.state.fullName}</Text>
                     <Text style={s.h3}>{this.state.email}</Text>
                 </View>
                 
                 <View style={{flex:1, justifyContent:"center"}}>
                     <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={() => this.props.navigation.navigate('Settings')}>  
-                        <Icon name='wrench' type='font-awesome' />     
+                        <Icon name='wrench' type='font-awesome' />
                         <Text style={s.standardButtonText}>Edit profile</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[s.standardButton, s.buttonContainer]} onPress={() => this.logout()}>

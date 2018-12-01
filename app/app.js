@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { StackNavigator, SwitchNavigator, TabNavigator, TabBarBottom } from 'react-navigation';
 import { Icon } from 'react-native-elements'
@@ -12,7 +12,21 @@ import PasswordScreen from './screens/password';
 import ResetScreen from './screens/reset';
 import PrivacyScreen from './screens/privacy';
 import TermsScreen from './screens/terms';
+import { Font } from 'expo';
 
+export default class App extends Component {
+    
+    componentDidMount() {
+        Font.loadAsync({
+        'LicensePlate': require('./assets/fonts/LicensePlate.ttf'),
+        });
+    }
+    render() {
+      return (
+        <Nav></Nav>
+      );
+    }
+}
 
 const AuthStack = StackNavigator(
   { 
@@ -73,7 +87,7 @@ const MenuStack = TabNavigator(
       }
 })
 
-export default SwitchNavigator(
+const Nav = SwitchNavigator(
   {
     AuthLoading: SplashScreen,
     App: MenuStack,

@@ -19,8 +19,11 @@ export default class TermsScreen extends React.Component {
 
     async componentDidMount(){       
         let service = new AuthService();
-        let data = await service.getLegal();
-        await this.setState({content: data.terms, loading: false});
+        let data = await service.getTerms();
+        if (!data)
+        Alert.alert("Something went wrong.", "Error", [{text: 'Well this is awkward.', onPress: () => {}}]);
+        else
+            await this.setState({content: data.data, loading: false});
     }
 
     render() {

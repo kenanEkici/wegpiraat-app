@@ -30,7 +30,8 @@ export default class AuthService {
             if (resp.status >= 400) {
                 return false;  
             }
-                
+            
+            console.log(await this.getUser());
             if (await this.repo.setKeys(await resp.json())) {
                 return await this.repo.setUser(await this.getUser());
             }
@@ -53,7 +54,6 @@ export default class AuthService {
                 },
                 body: JSON.stringify({
                     email: body.email,
-                    username: body.username,
                     password: body.password,
                     confirm: body.confirm
                 })
@@ -137,12 +137,22 @@ export default class AuthService {
         return await this.repo.getUser();
     }
 
-    getLegal = async() => {
-        let resp = await fetch(`${c.api}/${c.wegpiraten}/${c.legal}`, { 
+    getPrivacy = async() => {
+        let resp = await fetch(`${c.api}/${c.privacy}`, { 
             method: 'GET'
         });
 
-        if (resp.status > 400)
+        if (resp.status >= 400)
+            return false;
+        return await resp.json();
+    }
+
+    getTerms = async() => {
+        let resp = await fetch(`${c.api}/${c.terms}`, { 
+            method: 'GET'
+        });
+
+        if (resp.status >= 400)
             return false;
         return await resp.json();
     }
