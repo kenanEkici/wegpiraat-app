@@ -12,18 +12,12 @@ import PasswordScreen from './screens/password';
 import ResetScreen from './screens/reset';
 import PrivacyScreen from './screens/privacy';
 import TermsScreen from './screens/terms';
-import { Font } from 'expo';
 
 export default class App extends Component {
     
-    componentDidMount() {
-        Font.loadAsync({
-        'LicensePlate': require('./assets/fonts/LicensePlate.ttf'),
-        });
-    }
     render() {
       return (
-        <Nav></Nav>
+        <Application></Application>
       );
     }
 }
@@ -87,7 +81,7 @@ const MenuStack = TabNavigator(
       }
 })
 
-const Nav = SwitchNavigator(
+const Application = SwitchNavigator(
   {
     AuthLoading: SplashScreen,
     App: MenuStack,

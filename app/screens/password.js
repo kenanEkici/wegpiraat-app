@@ -1,8 +1,11 @@
 import React from 'react';
-import { Button, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import AuthService from '../service/authservice';
 import s from '../styles/styles';
-import { Text, Icon } from 'react-native-elements';
+import { Text } from 'react-native-elements';
+import { iOSUIKit } from 'react-native-typography';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Sae } from 'react-native-textinput-effects';
 
 export default class PasswordScreen extends React.Component {
 
@@ -37,13 +40,19 @@ export default class PasswordScreen extends React.Component {
         <ScrollView contentContainerStyle={s.scrollContainer}>
             <View style={s.centerContainer}>
                 <Text h3 style={s.centeredStandardText}>Send a reset token to your email</Text>
-                <Text style={s.standardText}/>
-                <TextInput onChangeText={(text)=>this.setState({email:text})} value={this.state.email} placeholder="Email" style={s.entry} />                
+                <View style={{margin:20}}>
+                  <Sae label={'Email Address'} iconClass={FontAwesome} iconName={'pencil'}
+                    iconColor={'black'} autoCapitalize={'none'} autoCorrect={false} 
+                    onChangeText={(text)=>this.setState({email:text})} value={this.state.email}
+                  />
+                </View>
                 <TouchableOpacity disabled={this.state.loading} style={[s.standardButton, s.buttonContainer]} onPress={() => this.sendResetToken()}>  
-                    {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <Icon name='arrow-up' type='font-awesome' /> }
+                    {this.state.loading && <ActivityIndicator animating={true} color="white" /> || <FontAwesome name='arrow-up'/> }
                     <Text style={s.standardButtonText}>Send</Text>
                 </TouchableOpacity>
-                <Text style={[s.a]} onPress={()=>this.props.navigation.navigate('Reset')}>I already have a token</Text>        
+                <View style={{margin:20}}>
+                  <Text style={[s.a, iOSUIKit.bodyEmphasized]} onPress={()=>this.props.navigation.navigate('Reset')}>I already have a token</Text>        
+                </View>
             </View>  
         </ScrollView>
       )
